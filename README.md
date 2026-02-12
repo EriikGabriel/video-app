@@ -47,9 +47,9 @@ Aplicação web para gerenciar e organizar seus vídeos favoritos do YouTube. Ad
 
 ### **Infraestrutura**
 
-- **Vercel** - Deploy automático e funciona bem com o ecossistema React
-- **Render** - Free tier com auto-sleep e de fácil uso
-- **Neon** - PostgreSQL serverless
+- **Vercel (Frontend)** - Deploy automático e funciona bem com o ecossistema React
+- **Render (Backend API)** - Free tier com auto-sleep e de fácil uso
+- **Neon (Banco de Dados)** - PostgreSQL serverless
 
 ---
 
