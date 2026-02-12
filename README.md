@@ -47,9 +47,9 @@ Aplicação web para gerenciar e organizar seus vídeos favoritos do YouTube. Ad
 
 ### **Infraestrutura**
 
-- ☁️ **Vercel** - Deploy automático e funciona bem com o ecossistema React
-- 🎨 **Render** - Free tier com auto-sleep e de fácil uso
-- 🗄️ **Neon** - PostgreSQL serverless
+- **Vercel** - Deploy automático e funciona bem com o ecossistema React
+- **Render** - Free tier com auto-sleep e de fácil uso
+- **Neon** - PostgreSQL serverless
 
 ---
 
@@ -227,6 +227,22 @@ model Video {
 - **UUID como Primary Key**: Mais seguro que auto-increment, evita exposição de registros
 - **Campos Required**: Todos campos obrigatórios para garantir integridade dos dados
 - **@@map("videos")**: Nome da tabela no plural para convenção SQL padrão
+
+---
+
+## 📊 Diagrama de Sequência - Fluxo de Cadastro de Vídeos
+
+O diagrama abaixo ilustra o fluxo completo desde a interação do usuário até a persistência no banco de dados:
+
+![Diagrama de Sequência UML](.github/uml.png)
+
+**Fluxo:**
+
+1. Usuário preenche formulário com título, URL e descrição
+2. Frontend valida e envia requisição POST para o backend
+3. Backend valida dados com Zod e persiste no banco
+4. Após sucesso, frontend busca lista atualizada de vídeos
+5. Interface é atualizada exibindo o novo vídeo cadastrado
 
 ---
 
