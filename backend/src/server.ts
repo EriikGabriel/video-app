@@ -5,9 +5,11 @@ import { fastify } from "fastify"
 import {
   serializerCompiler,
   validatorCompiler,
+  ZodTypeProvider,
 } from "fastify-type-provider-zod"
+import { routes } from "./routes"
 
-const server = fastify()
+const server = fastify().withTypeProvider<ZodTypeProvider>()
 
 server.setValidatorCompiler(validatorCompiler)
 server.setSerializerCompiler(serializerCompiler)
@@ -28,9 +30,7 @@ server.register(fastifySwaggerUi, {
   routePrefix: "/docs",
 })
 
-server.get("/", async (request, reply) => {
-  return { message: "Hello, World!" }
-})
+server.register(routes)
 
 server.listen({ port: 3000 }, (err, address) => {
   if (err) {
