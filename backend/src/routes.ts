@@ -1,5 +1,5 @@
-import { randomUUID } from "node:crypto"
 import z from "zod"
+import { prisma } from "../lib/prisma"
 import { FastifyTypedInstance } from "./types"
 
 interface Video {
@@ -31,7 +31,9 @@ export async function routes(server: FastifyTypedInstance) {
       },
     },
     async (request, reply) => {
-      return videos
+      return prisma.video.findMany().then((videos: Video[]) => {
+        return reply.status(200).send(videos)
+      })
     },
   )
 
@@ -48,20 +50,29 @@ export async function routes(server: FastifyTypedInstance) {
         }),
         response: {
           201: z.object({}).describe("Vídeo criado com sucesso"),
+          400: z.object({}).describe("Erro ao criar vídeo"),
         },
       },
     },
     async (request, reply) => {
       const { description, title, url } = request.body
 
-      videos.push({
-        id: randomUUID(),
-        title,
-        description,
-        url,
-      })
-
-      return reply.status(201).send({})
+      await prisma.video
+        .create({
+          data: {
+            title,
+            description,
+            url,
+          },
+        })
+        .then(() => {
+          console.debug("Vídeo criado com sucesso")
+          return reply.status(201).send({})
+        })
+        .catch((error) => {
+          console.error("Erro ao criar vídeo:", error)
+          return reply.status(400).send({})
+        })
     },
   )
 
@@ -81,6 +92,7 @@ export async function routes(server: FastifyTypedInstance) {
         }),
         response: {
           200: z.object({}).describe("Vídeo atualizado com sucesso"),
+          400: z.object({}).describe("Erro ao atualizar vídeo"),
           404: z.object({}).describe("Vídeo não encontrado"),
         },
       },
@@ -89,17 +101,29 @@ export async function routes(server: FastifyTypedInstance) {
       const { id } = request.params
       const { title, description, url } = request.body
 
-      const video = videos.find((v) => v.id === id)
+      const video = await prisma.video.findUnique({ where: { id } })
 
       if (!video) {
         return reply.status(404).send({})
       }
 
-      if (title) video.title = title
-      if (description) video.description = description
-      if (url) video.url = url
-
-      return reply.status(200).send({})
+      await prisma.video
+        .update({
+          where: { id },
+          data: {
+            title: title ?? video.title,
+            description: description ?? video.description,
+            url: url ?? video.url,
+          },
+        })
+        .then(() => {
+          console.debug("Vídeo atualizado com sucesso")
+          return reply.status(200).send({})
+        })
+        .catch((error) => {
+          console.error("Erro ao atualizar vídeo:", error)
+          return reply.status(400).send({})
+        })
     },
   )
 
@@ -114,6 +138,7 @@ export async function routes(server: FastifyTypedInstance) {
         }),
         response: {
           200: z.object({}).describe("Vídeo removido com sucesso"),
+          400: z.object({}).describe("Erro ao remover vídeo"),
           404: z.object({}).describe("Vídeo não encontrado"),
         },
       },
@@ -121,15 +146,22 @@ export async function routes(server: FastifyTypedInstance) {
     async (request, reply) => {
       const { id } = request.params
 
-      const removeIndex = videos.findIndex((v) => v.id === id)
+      const video = await prisma.video.findUnique({ where: { id } })
 
-      if (removeIndex === -1) {
+      if (!video) {
         return reply.status(404).send({})
       }
 
-      videos.splice(removeIndex, 1)
-
-      return reply.status(200).send({})
+      await prisma.video
+        .delete({ where: { id } })
+        .then(() => {
+          console.debug("Vídeo removido com sucesso")
+          return reply.status(200).send({})
+        })
+        .catch((error) => {
+          console.error("Erro ao remover vídeo:", error)
+          return reply.status(400).send({})
+        })
     },
   )
 }
