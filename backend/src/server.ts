@@ -38,7 +38,10 @@ server.register(fastifySwaggerUi, {
 
 server.register(routes)
 
-server.listen({ port: 3000 }, (err, address) => {
+const PORT = Number(process.env.PORT) || 3000
+const HOST = process.env.HOST || "0.0.0.0"
+
+server.listen({ port: PORT, host: HOST }, (err, address) => {
   if (err) {
     console.error(err)
     process.exit(1)
