@@ -3,6 +3,7 @@ import fastifySwagger from "@fastify/swagger"
 import fastifySwaggerUi from "@fastify/swagger-ui"
 import { fastify } from "fastify"
 import {
+  jsonSchemaTransform,
   serializerCompiler,
   validatorCompiler,
   ZodTypeProvider,
@@ -17,13 +18,14 @@ server.setSerializerCompiler(serializerCompiler)
 server.register(fastifyCors, { origin: "*" })
 
 server.register(fastifySwagger, {
-  swagger: {
+  openapi: {
     info: {
-      title: "Video App API",
+      title: "VideoMe API",
       description: "API para gerenciamento de vídeos",
       version: "1.0.0",
     },
   },
+  transform: jsonSchemaTransform,
 })
 
 server.register(fastifySwaggerUi, {
