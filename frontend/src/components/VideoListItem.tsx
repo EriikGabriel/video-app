@@ -4,9 +4,17 @@ interface VideoListItemProps {
   title: string
   description: string
   url: string
+  onEdit?: () => void
+  onDelete?: () => void
 }
 
-export function VideoListItem({ title, description, url }: VideoListItemProps) {
+export function VideoListItem({
+  title,
+  description,
+  url,
+  onEdit,
+  onDelete,
+}: VideoListItemProps) {
   return (
     <li className="w-full min-h-40 border-3 border-neutral-700 bg-neutral-700 rounded-md flex gap-4">
       <div className="min-h-40 rounded-md w-60 bg-neutral-800 flex items-center justify-center">
@@ -27,10 +35,16 @@ export function VideoListItem({ title, description, url }: VideoListItemProps) {
       </header>
 
       <div className="ml-auto flex flex-col items-center justify-center">
-        <button className="text-yellow-500 hover:bg-yellow-500 hover:text-white ">
+        <button
+          className="text-yellow-500 hover:bg-yellow-500 hover:text-white"
+          onClick={onEdit}
+        >
           <PencilIcon className="size-6 text-white m-4" />
         </button>
-        <button className="text-red-500 hover:bg-red-500 hover:text-white ml-auto">
+        <button
+          className="text-red-500 hover:bg-red-500 hover:text-white ml-auto"
+          onClick={onDelete}
+        >
           <TrashIcon className="size-6 text-white m-4" />
         </button>
       </div>

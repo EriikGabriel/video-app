@@ -2,13 +2,14 @@ import { PlusIcon } from "@phosphor-icons/react"
 import { useState } from "react"
 import { FormModal } from "./components/FormModal"
 import { VideoListItem } from "./components/VideoListItem"
+import type { DataType } from "./types"
 
 export function App() {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [modalAction, setModalAction] = useState<"add" | "edit">("add")
+  const [editModalData, setEditModalData] = useState<DataType | null>(null)
 
-  const handleOpenModal = (action: "add" | "edit") => {
-    setModalAction(action)
+  const handleOpenModal = (data: DataType | null) => {
+    setEditModalData(data)
     setIsModalOpen(true)
   }
 
@@ -36,7 +37,7 @@ export function App() {
             <button
               className="p-2 rounded-md absolute -top-5 right-5 bg-orange-200 z-10"
               aria-label="Adicionar novo vídeo"
-              onClick={() => handleOpenModal("add")}
+              onClick={() => handleOpenModal(null)}
             >
               <PlusIcon
                 className="inline text-neutral-900 size-5"
@@ -64,6 +65,14 @@ export function App() {
                 title="Titulo do Vídeo 1"
                 description="Descrição breve do vídeo para dar mais contexto ao usuário."
                 url="https://example.com/video1"
+                onEdit={() =>
+                  handleOpenModal({
+                    title: "Titulo do Vídeo 1",
+                    description:
+                      "Descrição breve do vídeo para dar mais contexto ao usuário.",
+                    url: "https://example.com/video1",
+                  })
+                }
               />
               <VideoListItem
                 title="Titulo do Vídeo 2"
@@ -82,7 +91,7 @@ export function App() {
         <FormModal
           open={isModalOpen}
           onClose={handleCloseModal}
-          action={modalAction}
+          videoData={editModalData}
         />
       </main>
     </>

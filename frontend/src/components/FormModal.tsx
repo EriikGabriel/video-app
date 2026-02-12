@@ -1,12 +1,17 @@
 import { XIcon } from "@phosphor-icons/react"
+import type { DataType } from "../types"
 
 type FormModalProps = {
   onClose: () => void
   open?: boolean
-  action: "add" | "edit"
+  videoData: DataType | null
 }
 
-export function FormModal({ onClose, open = false, action }: FormModalProps) {
+export function FormModal({
+  onClose,
+  open = false,
+  videoData,
+}: FormModalProps) {
   const handleClose = () => {
     onClose()
   }
@@ -22,13 +27,10 @@ export function FormModal({ onClose, open = false, action }: FormModalProps) {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    switch (action) {
-      case "add":
-        addVideo()
-        break
-      case "edit":
-        editVideo()
-        break
+    if (videoData) {
+      editVideo()
+    } else {
+      addVideo()
     }
 
     handleClose()
@@ -52,7 +54,7 @@ export function FormModal({ onClose, open = false, action }: FormModalProps) {
             id="modal-title"
             className="text-2xl font-semibold  text-white p-4"
           >
-            Adicionar novo vídeo
+            {videoData ? "Editar vídeo" : "Adicionar novo vídeo"}
           </h2>
           <button
             className="text-white"
@@ -73,6 +75,7 @@ export function FormModal({ onClose, open = false, action }: FormModalProps) {
               id="title"
               name="title"
               className="w-full p-2 rounded-md bg-neutral-700 border border-neutral-600 text-white focus:outline-none focus:ring-2 focus:ring-orange-200"
+              defaultValue={videoData?.title}
               required
             />
           </div>
@@ -86,6 +89,7 @@ export function FormModal({ onClose, open = false, action }: FormModalProps) {
               id="url"
               name="url"
               className="w-full p-2 rounded-md bg-neutral-700 border border-neutral-600 text-white focus:outline-none focus:ring-2 focus:ring-orange-200"
+              defaultValue={videoData?.url}
               required
             />
           </div>
@@ -99,6 +103,7 @@ export function FormModal({ onClose, open = false, action }: FormModalProps) {
               name="description"
               rows={4}
               className="w-full p-2 rounded-md bg-neutral-700 border border-neutral-600 text-white focus:outline-none focus:ring-2 focus:ring-orange-200 resize-none"
+              defaultValue={videoData?.description}
               required
             />
           </div>
@@ -107,7 +112,7 @@ export function FormModal({ onClose, open = false, action }: FormModalProps) {
             type="submit"
             className="self-end px-4 py-2 rounded-md bg-orange-200 text-neutral-900 font-semibold hover:bg-orange-300 transition-colors"
           >
-            Adicionar vídeo
+            {videoData ? "Salvar alterações" : "Adicionar vídeo"}
           </button>
         </form>
       </div>
