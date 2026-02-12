@@ -33,7 +33,7 @@ export function VideoListItem({
 
       <header className="flex flex-col justify-center gap-2 p-4">
         <h2 className="text-2xl font-semibold text-white">{title}</h2>
-        <p className="text-center text-neutral-400">{description}</p>
+        <p className="text-neutral-400">{description}</p>
       </header>
 
       <div className="ml-auto flex flex-col gap-2 items-center justify-center">

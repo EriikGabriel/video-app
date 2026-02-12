@@ -1,53 +1,77 @@
-import { useState } from "react"
+import axios from "axios"
+import { useEffect, useState } from "react"
 import type { Video, VideoFormData } from "../types"
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000"
+
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+})
+
 export function useVideos() {
-  const [videos, setVideos] = useState<Video[]>([
-    {
-      id: "1",
-      title: "Titulo do Vídeo 1",
-      description:
-        "Descrição breve do vídeo para dar mais contexto ao usuário.",
-      url: "https://example.com/video1",
-    },
-    {
-      id: "2",
-      title: "Titulo do Vídeo 2",
-      description:
-        "Descrição breve do vídeo para dar mais contexto ao usuário.",
-      url: "https://example.com/video2",
-    },
-    {
-      id: "3",
-      title: "Titulo do Vídeo 3",
-      description:
-        "Descrição breve do vídeo para dar mais contexto ao usuário.",
-      url: "https://example.com/video3",
-    },
-  ])
+  const [videos, setVideos] = useState<Video[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const addVideo = (data: VideoFormData) => {
-    const newVideo: Video = {
-      id: Date.now().toString(),
-      ...data,
+  const fetchVideos = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      const { data } = await api.get<Video[]>("/videos")
+      setVideos(data)
+    } catch (err) {
+      setError(axios.isAxiosError(err) ? err.message : "Erro desconhecido")
+      console.error("Erro ao buscar vídeos:", err)
+    } finally {
+      setLoading(false)
     }
-    setVideos((prev) => [...prev, newVideo])
   }
 
-  const updateVideo = (id: string, data: VideoFormData) => {
-    setVideos((prev) =>
-      prev.map((video) => (video.id === id ? { ...video, ...data } : video)),
-    )
+  useEffect(() => {
+    fetchVideos()
+  }, [])
+
+  const addVideo = async (data: VideoFormData) => {
+    try {
+      await api.post("/videos", data)
+      await fetchVideos()
+    } catch (err) {
+      console.error("Erro ao adicionar vídeo:", err)
+      throw err
+    }
   }
 
-  const deleteVideo = (id: string) => {
-    setVideos((prev) => prev.filter((video) => video.id !== id))
+  const updateVideo = async (id: string, data: VideoFormData) => {
+    try {
+      await api.patch(`/videos/${id}`, data)
+      await fetchVideos()
+    } catch (err) {
+      console.error("Erro ao atualizar vídeo:", err)
+      throw err
+    }
+  }
+
+  const deleteVideo = async (id: string) => {
+    try {
+      await api.delete(`/videos/${id}`)
+      await fetchVideos()
+    } catch (err) {
+      console.error("Erro ao deletar vídeo:", err)
+      throw err
+    }
   }
 
   return {
     videos,
+    loading,
+    error,
     addVideo,
     updateVideo,
     deleteVideo,
+    refetch: fetchVideos,
   }
 }

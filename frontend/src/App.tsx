@@ -7,7 +7,8 @@ import { useVideos } from "./hooks/useVideos"
 import type { MessageModalData, VideoFormData, VideoToEdit } from "./types"
 
 export function App() {
-  const { videos, addVideo, updateVideo, deleteVideo } = useVideos()
+  const { videos, loading, error, addVideo, updateVideo, deleteVideo } =
+    useVideos()
 
   const [isFormModalOpen, setIsFormModalOpen] = useState(false)
   const [editingVideo, setEditingVideo] = useState<VideoToEdit | null>(null)
@@ -29,11 +30,23 @@ export function App() {
     setEditingVideo(null)
   }
 
-  const handleFormSubmit = (data: VideoFormData) => {
-    if (editingVideo) {
-      updateVideo(editingVideo.id, data)
-    } else {
-      addVideo(data)
+  const handleFormSubmit = async (data: VideoFormData) => {
+    try {
+      if (editingVideo) {
+        await updateVideo(editingVideo.id, data)
+      } else {
+        await addVideo(data)
+      }
+      handleCloseFormModal()
+    } catch (err) {
+      setMessageModalData({
+        title: "Erro",
+        message: `Erro ao ${editingVideo ? "atualizar" : "adicionar"} vídeo,`,
+        actionLabel: "OK",
+        onAction: () => setMessageModalData(null),
+      })
+
+      console.error("Erro ao enviar formulário:", err)
     }
   }
 
@@ -42,9 +55,20 @@ export function App() {
       title: "Excluir vídeo",
       message: `Tem certeza que deseja excluir o vídeo "${title}"?`,
       actionLabel: "Excluir",
-      onAction: () => {
-        deleteVideo(id)
-        setMessageModalData(null)
+      onAction: async () => {
+        try {
+          await deleteVideo(id)
+          setMessageModalData(null)
+        } catch (err) {
+          setMessageModalData({
+            title: "Erro",
+            message: "Não foi possível excluir o vídeo. Tente novamente.",
+            actionLabel: "OK",
+            onAction: () => setMessageModalData(null),
+          })
+
+          console.error("Erro ao excluir vídeo:", err)
+        }
       },
     })
   }
@@ -81,7 +105,32 @@ export function App() {
               />
             </button>
 
-            {videos.length === 0 ? (
+            {loading ? (
+              <article className="w-full h-full border-2 border-dashed border-neutral-600 rounded-md flex flex-col items-center justify-center gap-4">
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className="flex flex-col items-center gap-2"
+                >
+                  <h2 className="text-2xl font-semibold text-white">
+                    Carregando vídeos...
+                  </h2>
+                </div>
+              </article>
+            ) : error ? (
+              <article className="w-full h-full border-2 border-dashed border-red-600 rounded-md flex flex-col items-center justify-center gap-4">
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className="flex flex-col items-center gap-2"
+                >
+                  <h2 className="text-2xl font-semibold text-red-400">
+                    Erro ao carregar vídeos
+                  </h2>
+                  <p className="text-center text-neutral-400">{error}</p>
+                </div>
+              </article>
+            ) : videos.length === 0 ? (
               <article className="w-full h-full border-2 border-dashed border-neutral-600 rounded-md flex flex-col items-center justify-center gap-4">
                 <div
                   role="status"
