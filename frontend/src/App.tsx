@@ -154,6 +154,7 @@ export function App() {
                     key={video.id}
                     title={video.title}
                     description={video.description}
+                    url={video.url}
                     onPlay={() => handlePlayVideo(video.url)}
                     onEdit={() => handleOpenEditModal(video)}
                     onDelete={() =>
