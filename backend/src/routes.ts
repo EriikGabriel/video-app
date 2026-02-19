@@ -98,7 +98,10 @@ export async function routes(server: FastifyTypedInstance) {
                 folder: "videome",
                 use_filename: true,
               },
-              (error: UploadApiErrorResponse | undefined, result: UploadApiResponse | undefined) => {
+              (
+                error: UploadApiErrorResponse | undefined,
+                result: UploadApiResponse | undefined,
+              ) => {
                 if (error) reject(error)
                 else if (result) resolve(result as CloudinaryUploadResult)
               },
@@ -188,7 +191,10 @@ export async function routes(server: FastifyTypedInstance) {
                 folder: "videome",
                 use_filename: true,
               },
-              (error: UploadApiErrorResponse | undefined, result: UploadApiResponse | undefined) => {
+              (
+                error: UploadApiErrorResponse | undefined,
+                result: UploadApiResponse | undefined,
+              ) => {
                 if (error) reject(error)
                 else if (result) resolve(result as CloudinaryUploadResult)
               },
