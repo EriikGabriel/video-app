@@ -2,9 +2,9 @@ import type { MultipartValue } from "@fastify/multipart"
 import type { UploadApiErrorResponse, UploadApiResponse } from "cloudinary"
 import { Readable } from "node:stream"
 import z from "zod"
-import { cloudinary } from "./lib/cloudinary.js"
-import { prisma } from "./lib/prisma.js"
-import { FastifyTypedInstance } from "./types.js"
+import { cloudinary } from "./lib/cloudinary"
+import { prisma } from "./lib/prisma"
+import { FastifyTypedInstance } from "./types"
 
 interface Video {
   id: string
